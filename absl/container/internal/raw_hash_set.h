@@ -836,7 +836,7 @@ class raw_hash_set {
       auto target = find_first_non_full(hash);
       set_ctrl(target.offset, H2(hash));
       emplace_at(target.offset, v);
-      infoz_.RecordInsert(hash, target.probe_length);
+      // infoz_.RecordInsert(hash, target.probe_length);
     }
     size_ = that.size();
     growth_left() -= that.size();
@@ -850,7 +850,7 @@ class raw_hash_set {
         slots_(absl::exchange(that.slots_, nullptr)),
         size_(absl::exchange(that.size_, 0)),
         capacity_(absl::exchange(that.capacity_, 0)),
-        infoz_(absl::exchange(that.infoz_, HashtablezInfoHandle())),
+        // infoz_(absl::exchange(that.infoz_, HashtablezInfoHandle())),
         // Hash, equality and allocator are copied instead of moved because
         // `that` must be left valid. If Hash is std::function<Key>, moving it
         // would create a nullptr functor that cannot be called.
@@ -871,7 +871,7 @@ class raw_hash_set {
       std::swap(size_, that.size_);
       std::swap(capacity_, that.capacity_);
       std::swap(growth_left(), that.growth_left());
-      std::swap(infoz_, that.infoz_);
+      // std::swap(infoz_, that.infoz_);
     } else {
       reserve(that.size());
       // Note: this will copy elements of dense_set and unordered_set instead of
@@ -942,7 +942,7 @@ class raw_hash_set {
       reset_growth_left();
     }
     assert(empty());
-    infoz_.RecordStorageChanged(0, capacity_);
+    // infoz_.RecordStorageChanged(0, capacity_);
   }
 
   // This overload kicks in when the argument is an rvalue of insertable and
@@ -1228,7 +1228,7 @@ class raw_hash_set {
     swap(growth_left(), that.growth_left());
     swap(hash_ref(), that.hash_ref());
     swap(eq_ref(), that.eq_ref());
-    swap(infoz_, that.infoz_);
+    // swap(infoz_, that.infoz_);
     if (AllocTraits::propagate_on_container_swap::value) {
       swap(alloc_ref(), that.alloc_ref());
     } else {
@@ -1241,7 +1241,7 @@ class raw_hash_set {
     if (n == 0 && capacity_ == 0) return;
     if (n == 0 && size_ == 0) {
       destroy_slots();
-      infoz_.RecordStorageChanged(0, 0);
+      // infoz_.RecordStorageChanged(0, 0);
       return;
     }
     // bitor is a faster way of doing `max` here. We will round up to the next
@@ -1453,7 +1453,7 @@ class raw_hash_set {
 
     set_ctrl(index, was_never_full ? kEmpty : kDeleted);
     growth_left() += was_never_full;
-    infoz_.RecordErase();
+    // infoz_.RecordErase();
   }
 
   void initialize_slots() {
@@ -1470,7 +1470,7 @@ class raw_hash_set {
     // bound more carefully.
     if (std::is_same<SlotAlloc, std::allocator<slot_type>>::value &&
         slots_ == nullptr) {
-      infoz_ = Sample();
+      // infoz_ = Sample();
     }
 
     auto layout = MakeLayout(capacity_);
@@ -1480,7 +1480,7 @@ class raw_hash_set {
     slots_ = layout.template Pointer<1>(mem);
     reset_ctrl();
     reset_growth_left();
-    infoz_.RecordStorageChanged(size_, capacity_);
+    // infoz_.RecordStorageChanged(size_, capacity_);
   }
 
   void destroy_slots() {
@@ -1528,7 +1528,7 @@ class raw_hash_set {
       Deallocate<Layout::Alignment()>(&alloc_ref(), old_ctrl,
                                       layout.AllocSize());
     }
-    infoz_.RecordRehash(total_probe_length);
+    // infoz_.RecordRehash(total_probe_length);
   }
 
   void drop_deletes_without_resize() ABSL_ATTRIBUTE_NOINLINE {
@@ -1594,7 +1594,7 @@ class raw_hash_set {
       }
     }
     reset_growth_left();
-    infoz_.RecordRehash(total_probe_length);
+    // infoz_.RecordRehash(total_probe_length);
   }
 
   void rehash_and_grow_if_necessary() {
@@ -1702,7 +1702,7 @@ class raw_hash_set {
     ++size_;
     growth_left() -= IsEmpty(ctrl_[target.offset]);
     set_ctrl(target.offset, H2(hash));
-    infoz_.RecordInsert(hash, target.probe_length);
+    // infoz_.RecordInsert(hash, target.probe_length);
     return target.offset;
   }
 
@@ -1795,7 +1795,7 @@ class raw_hash_set {
   slot_type* slots_ = nullptr;     // [capacity * slot_type]
   size_t size_ = 0;                // number of full slots
   size_t capacity_ = 0;            // total number of slots
-  HashtablezInfoHandle infoz_;
+  // HashtablezInfoHandle infoz_;
   absl::container_internal::CompressedTuple<size_t /* growth_left */, hasher,
                                             key_equal, allocator_type>
       settings_{0, hasher{}, key_equal{}, allocator_type{}};
